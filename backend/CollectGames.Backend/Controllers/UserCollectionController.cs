@@ -13,11 +13,25 @@ namespace CollectGames.Backend.Controllers
     {
         private readonly AppDbContext _context;
         private readonly IImageService _imageService;
+        private readonly ICollectionReportService _reportService;
 
-        public UserCollectionController(AppDbContext context, IImageService imageService)
+        public UserCollectionController(AppDbContext context, IImageService imageService, ICollectionReportService reportService)
         {
             _context = context;
             _imageService = imageService;
+            _reportService = reportService;
+        }
+
+        [HttpGet("export/pdf")]
+        public async Task<IActionResult> ExportToPdf()
+        {
+            var items = await _context.UserCollection
+                .Include(uc => uc.Game)
+                .OrderByDescending(uc => uc.AddedDate)
+                .ToListAsync();
+
+            var pdfBytes = _reportService.GenerateCollectionPdf(items);
+            return File(pdfBytes, "application/pdf", $"CollectGames_Collection_{DateTime.Now:yyyyMMdd}.pdf");
         }
 
         [HttpGet]

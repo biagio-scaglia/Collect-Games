@@ -82,22 +82,39 @@
     color: var(--text-primary);
 }
 
+.exportButton {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 0.6rem 1rem;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+    transition: all var(--transition-base);
+}
+
+.exportButton:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: var(--snes-purple);
+}
+
 .addButton {
     display: flex;
     align-items: center;
-    gap: var(--spacing-sm);
-    background: var(--snes-yellow);
-    color: var(--snes-bg-dark);
+    gap: 0.5rem;
+    background: var(--snes-purple);
+    color: white;
     border: none;
-    padding: var(--spacing-md) var(--spacing-lg);
+    padding: 0.6rem 1.2rem;
     border-radius: var(--radius-md);
-    font-family: var(--font-pixel);
-    font-size: var(--font-size-sm);
+    font-weight: 600;
     cursor: pointer;
+    box-shadow: 0 4px 12px rgba(123, 95, 166, 0.3);
     transition: all var(--transition-base);
-    box-shadow:
-        0 4px 0 var(--snes-yellow-dark),
-        0 6px 12px rgba(0, 0, 0, 0.3);
     position: relative;
     top: 0;
 }

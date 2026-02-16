@@ -1,13 +1,14 @@
-import { Gamepad2, Plus, Package } from 'lucide-react';
+import { Gamepad2, Plus, Package, FileDown } from 'lucide-react';
 import { motion } from 'framer-motion';
 import styles from './Header.module.css';
 
 interface HeaderProps {
     totalGames: number;
     onAddClick: () => void;
+    onExportPdf: () => void;
 }
 
-export function Header({ totalGames, onAddClick }: HeaderProps) {
+export function Header({ totalGames, onAddClick, onExportPdf }: HeaderProps) {
     return (
         <motion.header
             className={styles.header}
@@ -43,6 +44,17 @@ export function Header({ totalGames, onAddClick }: HeaderProps) {
                             {totalGames}
                         </span>
                     </div>
+
+                    <motion.button
+                        className={styles.exportButton}
+                        onClick={onExportPdf}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        title="Export Collection to PDF"
+                    >
+                        <FileDown size={20} aria-hidden="true" />
+                        <span>PDF</span>
+                    </motion.button>
 
                     <motion.button
                         className={styles.addButton}

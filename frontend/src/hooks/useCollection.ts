@@ -1,28 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { collectionApi } from '../services/api';
-import type { UserCollectionItem } from '../types';
 
 export function useCollection() {
-    const [data, setData] = useState<UserCollectionItem[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const { data = [], isLoading, error, refetch } = useQuery({
+        queryKey: ['collection'],
+        queryFn: collectionApi.fetchCollection
+    });
 
-    const fetchData = async () => {
-        try {
-            setIsLoading(true);
-            setError(null);
-            const items = await collectionApi.fetchCollection();
-            setData(items);
-        } catch (err) {
-            setError(err instanceof Error ? err.message : 'Failed to fetch collection');
-        } finally {
-            setIsLoading(false);
-        }
+    return {
+        data,
+        isLoading,
+        error: error instanceof Error ? error.message : null,
+        refetch
     };
-
-    useEffect(() => {
-        fetchData();
-    }, []);
-
-    return { data, isLoading, error, refetch: fetchData };
 }

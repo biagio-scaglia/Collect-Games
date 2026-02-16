@@ -11,7 +11,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddScoped<IImageService, LocalImageService>();
+builder.Services.AddScoped<IImageService, ImageService>();
+builder.Services.AddScoped<ICollectionReportService, CollectionReportService>();
 
 // Add CORS
 builder.Services.AddCors(options =>

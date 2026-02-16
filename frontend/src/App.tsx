@@ -1,4 +1,4 @@
-import React, { useState, useMemo, Suspense, lazy } from 'react';
+import { useState, useMemo, Suspense, lazy } from 'react';
 import { PackageOpen, Heart, MessageSquare, Gamepad2 } from 'lucide-react';
 import { Header } from './components/Header';
 import { Filters } from './components/Filters';
@@ -107,9 +107,17 @@ function App() {
     );
   };
 
+  const handleExportPdf = () => {
+    window.open('http://localhost:5000/api/UserCollection/export/pdf', '_blank');
+  };
+
   return (
     <div className={styles.app}>
-      <Header totalGames={collection.length} onAddClick={() => setIsModalOpen(true)} />
+      <Header
+        totalGames={collection.length}
+        onAddClick={() => setIsModalOpen(true)}
+        onExportPdf={handleExportPdf}
+      />
 
       <nav className={styles.navTabs}>
         <button className={`${styles.navTab} ${currentView === 'collection' ? styles.activeTab : ''}`} onClick={() => setCurrentView('collection')}>
