@@ -4,6 +4,7 @@ using CollectGames.Backend.Dtos;
 using MediatR;
 using Mapster;
 using System.Threading;
+using Microsoft.EntityFrameworkCore;
 
 namespace CollectGames.Backend.Handlers;
 
