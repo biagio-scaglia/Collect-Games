@@ -2,6 +2,7 @@ import axios from 'axios';
 import type {
     UserCollectionItem,
     AddGameFormData,
+    UpdateGameFormData,
     Console,
     WishlistItem,
     WishlistFormData,
@@ -37,7 +38,7 @@ export const collectionApi = {
         return response.data;
     },
 
-    async updateGame(id: number, formData: AddGameFormData): Promise<UserCollectionItem> {
+    async updateGame(id: number, formData: UpdateGameFormData): Promise<UserCollectionItem> {
         const data = new FormData();
 
         if (formData.condition) data.append('condition', formData.condition);

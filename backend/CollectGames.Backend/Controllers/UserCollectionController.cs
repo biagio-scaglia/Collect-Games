@@ -4,6 +4,10 @@ using CollectGames.Backend.Models;
 using CollectGames.Backend.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Mapster;
+using Polly;
+using Microsoft.Extensions.Caching.Distributed;
+using System.Text.Json;
 
 namespace CollectGames.Backend.Controllers
 {
@@ -14,17 +18,27 @@ namespace CollectGames.Backend.Controllers
         private readonly AppDbContext _context;
         private readonly IImageService _imageService;
         private readonly ICollectionReportService _reportService;
+        private readonly ILogger<UserCollectionController> _logger;
+        private readonly IDistributedCache _cache;
 
-        public UserCollectionController(AppDbContext context, IImageService imageService, ICollectionReportService reportService)
+        public UserCollectionController(
+            AppDbContext context, 
+            IImageService imageService, 
+            ICollectionReportService reportService,
+            ILogger<UserCollectionController> logger,
+            IDistributedCache cache)
         {
             _context = context;
             _imageService = imageService;
             _reportService = reportService;
+            _logger = logger;
+            _cache = cache;
         }
 
         [HttpGet("export/pdf")]
         public async Task<IActionResult> ExportToPdf()
         {
+            _logger.LogInformation("Exporting collection to PDF");
             var items = await _context.UserCollection
                 .Include(uc => uc.Game)
                 .OrderByDescending(uc => uc.AddedDate)
@@ -37,130 +51,122 @@ namespace CollectGames.Backend.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserCollectionItem>>> GetCollection()
         {
-            return await _context.UserCollection
+            string cacheKey = "user_collection";
+            try 
+            {
+                var cachedData = await _cache.GetStringAsync(cacheKey);
+                if (!string.IsNullOrEmpty(cachedData))
+                {
+                    _logger.LogInformation("Returning collection from cache");
+                    return JsonSerializer.Deserialize<List<UserCollectionItem>>(cachedData)!;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Redis cache error, falling back to database");
+            }
+
+            var items = await _context.UserCollection
                 .Include(uc => uc.Game)
                 .OrderByDescending(uc => uc.AddedDate)
                 .ToListAsync();
+
+            try 
+            {
+                var options = new DistributedCacheEntryOptions()
+                    .SetAbsoluteExpiration(TimeSpan.FromMinutes(10));
+                await _cache.SetStringAsync(cacheKey, JsonSerializer.Serialize(items), options);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to update Redis cache");
+            }
+
+            return items;
         }
 
         [HttpPost]
         public async Task<ActionResult<UserCollectionItem>> AddItem([FromForm] UserCollectionCreateDto dto)
         {
-            var game = await _context.Games
-                .FirstOrDefaultAsync(g => g.Title == dto.Title && g.Platform == dto.Platform);
+            var retryPolicy = Policy.Handle<DbUpdateException>().WaitAndRetryAsync(3, i => TimeSpan.FromSeconds(i));
 
-            if (game == null)
-            {
-                game = new Game
+            return await retryPolicy.ExecuteAsync(async () => {
+                var game = await _context.Games
+                    .FirstOrDefaultAsync(g => g.Title == dto.Title && g.Platform == dto.Platform);
+
+                if (game == null)
                 {
-                    Title = dto.Title,
-                    Platform = dto.Platform,
-                    NormalizedTitle = dto.Title.ToUpperInvariant()
-                };
-                _context.Games.Add(game);
-                await _context.SaveChangesAsync();
-            }
+                    game = dto.Adapt<Game>();
+                    game.NormalizedTitle = dto.Title.ToUpperInvariant();
+                    _context.Games.Add(game);
+                    await _context.SaveChangesAsync();
+                }
 
-            string? imagePath = null;
-            if (dto.Image != null)
-            {
-                try
+                string? imagePath = null;
+                if (dto.Image != null)
                 {
                     imagePath = await _imageService.SaveImageAsync(dto.Image);
                 }
-                catch (Exception ex)
-                {
-                    return BadRequest($"Image upload failed: {ex.Message}");
-                }
-            }
 
-            var newItem = new UserCollectionItem
-            {
-                GameId = game.Id,
-                Condition = dto.Condition ?? "Loose",
-                PricePaid = dto.PricePaid,
-                PurchaseDate = dto.PurchaseDate ?? DateTime.UtcNow,
-                Notes = dto.Notes,
-                UserImagePath = imagePath,
-                AddedDate = DateTime.UtcNow
-            };
+                var newItem = dto.Adapt<UserCollectionItem>();
+                newItem.GameId = game.Id;
+                newItem.UserImagePath = imagePath;
+                newItem.AddedDate = DateTime.UtcNow;
 
-            _context.UserCollection.Add(newItem);
-            await _context.SaveChangesAsync();
+                _context.UserCollection.Add(newItem);
+                await _context.SaveChangesAsync();
+                newItem.Game = game;
 
-            newItem.Game = game;
-
-            return CreatedAtAction(nameof(GetCollection), new { id = newItem.Id }, newItem);
+                await _cache.RemoveAsync("user_collection");
+                _logger.LogInformation("Added new game to collection: {Title}", game.Title);
+                return CreatedAtAction(nameof(GetCollection), new { id = newItem.Id }, newItem);
+            });
         }
 
         [HttpPut("{id}")]
         public async Task<ActionResult<UserCollectionItem>> UpdateItem(int id, [FromForm] UserCollectionUpdateDto dto)
         {
             var item = await _context.UserCollection
-                .Include(u => u.Game)
-                .FirstOrDefaultAsync(u => u.Id == id);
+                .Include(uc => uc.Game)
+                .FirstOrDefaultAsync(uc => uc.Id == id);
 
-            if (item == null)
-                return NotFound();
+            if (item == null) return NotFound();
 
-            // Update fields
-            item.Condition = dto.Condition ?? item.Condition;
-            item.PricePaid = dto.PricePaid ?? item.PricePaid;
-            item.PurchaseDate = dto.PurchaseDate ?? item.PurchaseDate;
-            item.Notes = dto.Notes ?? item.Notes;
+            // Update item with Mapster
+            dto.Adapt(item);
 
-            // Handle image update if provided
             if (dto.Image != null)
             {
-                // Delete old image if exists
                 if (!string.IsNullOrEmpty(item.UserImagePath))
                 {
-                    try
-                    {
-                        await _imageService.DeleteImageAsync(item.UserImagePath);
-                    }
-                    catch { /* Ignore if file doesn't exist */ }
+                    await _imageService.DeleteImageAsync(item.UserImagePath);
                 }
-
-                // Save new image
-                try
-                {
-                    item.UserImagePath = await _imageService.SaveImageAsync(dto.Image);
-                }
-                catch (Exception ex)
-                {
-                    return BadRequest($"Image upload failed: {ex.Message}");
-                }
+                item.UserImagePath = await _imageService.SaveImageAsync(dto.Image);
             }
 
             await _context.SaveChangesAsync();
+            await _cache.RemoveAsync("user_collection");
 
+            _logger.LogInformation("Updated item {Id} in collection", id);
             return Ok(item);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteItem(int id)
         {
-            var item = await _context.UserCollection
-                .Include(u => u.Game)
-                .FirstOrDefaultAsync(u => u.Id == id);
+            var item = await _context.UserCollection.FindAsync(id);
+            if (item == null) return NotFound();
 
-            if (item == null)
-                return NotFound();
-
-            // Delete image file if exists
             if (!string.IsNullOrEmpty(item.UserImagePath))
             {
-                try
-                {
-                    await _imageService.DeleteImageAsync(item.UserImagePath);
-                }
-                catch { /* Ignore if file doesn't exist */ }
+                await _imageService.DeleteImageAsync(item.UserImagePath);
             }
 
             _context.UserCollection.Remove(item);
             await _context.SaveChangesAsync();
+            await _cache.RemoveAsync("user_collection");
 
+            _logger.LogInformation("Deleted item {Id} from collection", id);
             return NoContent();
         }
     }

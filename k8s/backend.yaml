@@ -20,6 +20,8 @@ spec:
         env:
         - name: ConnectionStrings__DefaultConnection
           value: "Server=mssql;Database=CollectGames;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True"
+        - name: ConnectionStrings__Redis
+          value: "redis:6379"
         - name: ASPNETCORE_URLS
           value: "http://+:5000"
         resources:

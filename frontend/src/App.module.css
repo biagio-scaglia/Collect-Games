@@ -90,6 +90,12 @@
     animation: heartbeat 1.5s ease-in-out infinite;
 }
 
+.tabsRoot {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
 .navTabs {
     display: flex;
     justify-content: center;
@@ -97,7 +103,6 @@
     background: var(--snes-bg-dark);
     padding: var(--spacing-md) 0;
     border-bottom: 4px solid var(--snes-gray-dark);
-    margin-bottom: var(--spacing-lg);
 }
 
 .navTab {
@@ -112,16 +117,20 @@
     align-items: center;
     gap: var(--spacing-sm);
     transition: all 0.2s;
-    border-bottom: 2px solid transparent;
+    border-bottom: 4px solid transparent;
 }
 
 .navTab:hover {
     color: var(--snes-purple-light);
 }
 
-.navTab.activeTab {
+.navTab[data-state="active"] {
     color: var(--snes-purple);
     border-bottom-color: var(--snes-purple);
+}
+
+.tabsContent {
+    outline: none;
 }
 
 @keyframes heartbeat {

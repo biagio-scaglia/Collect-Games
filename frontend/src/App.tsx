@@ -1,5 +1,6 @@
 import { useState, useMemo, Suspense, lazy } from 'react';
 import { PackageOpen, Heart, MessageSquare, Gamepad2 } from 'lucide-react';
+import * as Tabs from '@radix-ui/react-tabs';
 import { Header } from './components/Header';
 import { Filters } from './components/Filters';
 import { GameCard } from './components/GameCard';
@@ -68,45 +69,6 @@ function App() {
     setIsReviewModalOpen(true);
   };
 
-  const renderContent = () => {
-    if (currentView === 'wishlist') return <WishlistPage onPurchaseSuccess={refetchCollection} />;
-    if (currentView === 'reviews') return <ReviewsPage />;
-
-    return (
-      <>
-        <Filters
-          consoles={consoles}
-          onSearchChange={setSearchQuery}
-          onPlatformChange={setPlatformFilter}
-          onConditionChange={setConditionFilter}
-        />
-        <div className={styles.container}>
-          {isLoading && <div className={styles.loading}>Loading...</div>}
-          {!isLoading && filteredCollection.length === 0 && (
-            <div className={styles.empty}>
-              <PackageOpen size={64} className={styles.emptyIcon} />
-              <p>No games found.</p>
-            </div>
-          )}
-          <div className={styles.grid}>
-            {filteredCollection.map((item, index) => (
-              <GameCard
-                key={item.id}
-                item={item}
-                index={index}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-                review={getReviewByItemId(item.id)}
-                onAddReview={handleAddReview}
-                onEditReview={() => setCurrentView('reviews')}
-              />
-            ))}
-          </div>
-        </div>
-      </>
-    );
-  };
-
   const handleExportPdf = () => {
     window.open('http://localhost:5000/api/UserCollection/export/pdf', '_blank');
   };
@@ -119,21 +81,63 @@ function App() {
         onExportPdf={handleExportPdf}
       />
 
-      <nav className={styles.navTabs}>
-        <button className={`${styles.navTab} ${currentView === 'collection' ? styles.activeTab : ''}`} onClick={() => setCurrentView('collection')}>
-          <Gamepad2 size={18} /> Collection
-        </button>
-        <button className={`${styles.navTab} ${currentView === 'wishlist' ? styles.activeTab : ''}`} onClick={() => setCurrentView('wishlist')}>
-          <Heart size={18} /> Wishlist
-        </button>
-        <button className={`${styles.navTab} ${currentView === 'reviews' ? styles.activeTab : ''}`} onClick={() => setCurrentView('reviews')}>
-          <MessageSquare size={18} /> Reviews
-        </button>
-      </nav>
+      <Tabs.Root
+        value={currentView}
+        onValueChange={(v) => setCurrentView(v as View)}
+        className={styles.tabsRoot}
+      >
+        <Tabs.List className={styles.navTabs} aria-label="Manage your collection">
+          <Tabs.Trigger value="collection" className={styles.navTab}>
+            <Gamepad2 size={18} /> Collection
+          </Tabs.Trigger>
+          <Tabs.Trigger value="wishlist" className={styles.navTab}>
+            <Heart size={18} /> Wishlist
+          </Tabs.Trigger>
+          <Tabs.Trigger value="reviews" className={styles.navTab}>
+            <MessageSquare size={18} /> Reviews
+          </Tabs.Trigger>
+        </Tabs.List>
 
-      <main id="main-content" className={styles.main}>
-        {renderContent()}
-      </main>
+        <main className={styles.main}>
+          <Tabs.Content value="collection" className={styles.tabsContent}>
+            <Filters
+              consoles={consoles}
+              onSearchChange={setSearchQuery}
+              onPlatformChange={setPlatformFilter}
+              onConditionChange={setConditionFilter}
+            />
+            <div className={styles.container}>
+              {isLoading && <div className={styles.loading}>Loading...</div>}
+              {!isLoading && filteredCollection.length === 0 && (
+                <div className={styles.empty}>
+                  <PackageOpen size={64} className={styles.emptyIcon} />
+                  <p>No games found.</p>
+                </div>
+              )}
+              <div className={styles.grid}>
+                {filteredCollection.map((item, index) => (
+                  <GameCard
+                    key={item.id}
+                    item={item}
+                    index={index}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                    review={getReviewByItemId(item.id)}
+                    onAddReview={handleAddReview}
+                    onEditReview={() => setCurrentView('reviews')}
+                  />
+                ))}
+              </div>
+            </div>
+          </Tabs.Content>
+          <Tabs.Content value="wishlist" className={styles.tabsContent}>
+            <WishlistPage onPurchaseSuccess={refetchCollection} />
+          </Tabs.Content>
+          <Tabs.Content value="reviews" className={styles.tabsContent}>
+            <ReviewsPage />
+          </Tabs.Content>
+        </main>
+      </Tabs.Root>
 
       <Suspense fallback={null}>
         <AddGameModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSuccess={refetchCollection} consoles={consoles} />

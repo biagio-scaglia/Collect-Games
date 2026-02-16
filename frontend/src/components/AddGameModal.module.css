@@ -239,8 +239,8 @@
 
 .actions {
     display: flex;
-    gap: var(--spacing-md);
-    margin-top: var(--spacing-md);
+    gap: 1rem;
+    margin-top: 1rem;
 }
 
 .submitButton,

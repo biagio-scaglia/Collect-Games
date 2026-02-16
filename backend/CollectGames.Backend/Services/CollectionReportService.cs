@@ -1,8 +1,8 @@
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
-using QuestPDF.Previewer;
 using CollectGames.Backend.Models;
+using CollectGames.Backend.Data;
 
 namespace CollectGames.Backend.Services
 {
@@ -25,7 +25,7 @@ namespace CollectGames.Backend.Services
                     page.Size(PageSizes.A4);
                     page.Margin(1, Unit.Centimetre);
                     page.PageColor(Colors.White);
-                    page.DefaultTextStyle(x => x.FontSize(10).FontFamily(Fonts.Inter));
+                    page.DefaultTextStyle(x => x.FontSize(10).FontFamily(Fonts.Verdana));
 
                     page.Header().Row(row =>
                     {
@@ -76,10 +76,11 @@ namespace CollectGames.Backend.Services
                                     var fullPath = Path.Combine("wwwroot", item.UserImagePath.TrimStart('/'));
                                     if (File.Exists(fullPath))
                                     {
-                                        return container.Image(fullPath).FitArea();
+                                        container.Image(fullPath).FitArea();
+                                        return;
                                     }
                                 }
-                                return container.AlignCenter().AlignMiddle().Text("No Image").FontSize(8).FontColor(Colors.Grey.Medium);
+                                container.AlignCenter().AlignMiddle().Text("No Image").FontSize(8).FontColor(Colors.Grey.Medium);
                             });
                             
                             table.Cell().Element(ContentStyle).Text(item.Game?.Title ?? "Unknown");

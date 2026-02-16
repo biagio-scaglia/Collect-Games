@@ -1,18 +1,35 @@
 using CollectGames.Backend.Data;
 using CollectGames.Backend.Services;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
+using Scalar.AspNetCore;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using CollectGames.Backend.Validators;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+// Configure Serilog
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
 
+builder.Host.UseSerilog();
+
+// Add services to the container.
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddScoped<IImageService, ImageService>();
+builder.Services.AddScoped<IImageService, LocalImageService>();
 builder.Services.AddScoped<ICollectionReportService, CollectionReportService>();
+
+// Configure Redis Caching
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration.GetConnectionString("Redis") ?? "localhost:6379";
+});
 
 // Add CORS
 builder.Services.AddCors(options =>
@@ -25,31 +42,37 @@ builder.Services.AddCors(options =>
     });
 });
 
+
+
+builder.Services.AddControllers();
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddValidatorsFromAssemblyContaining<UserCollectionCreateValidator>();
+builder.Services.AddOpenApi(); // Required for Scalar
+
 var app = builder.Build();
 
-// TODO: Seed console data via API or separate script
-
+// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.MapOpenApi();
+    app.MapScalarApiReference(); // Better than Swagger!
 }
 
-app.UseHttpsRedirection();
-
 app.UseCors();
-
-var localizationOptions = new RequestLocalizationOptions()
-    .SetDefaultCulture("en-US")
-    .AddSupportedCultures("en-US")
-    .AddSupportedUICultures("en-US");
-
-app.UseRequestLocalization(localizationOptions);
-
 app.UseStaticFiles();
-
 app.UseAuthorization();
-
 app.MapControllers();
 
-app.Run();
+try
+{
+    Log.Information("Starting web host");
+    app.Run();
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Host terminated unexpectedly");
+}
+finally
+{
+    Log.CloseAndFlush();
+}

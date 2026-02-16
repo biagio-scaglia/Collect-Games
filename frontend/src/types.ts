@@ -39,6 +39,14 @@ export interface AddGameFormData {
     image?: File;
 }
 
+export interface UpdateGameFormData {
+    condition?: string;
+    pricePaid?: number;
+    purchaseDate?: string;
+    notes?: string;
+    image?: File;
+}
+
 export interface WishlistItem {
     id: number;
     title: string;
