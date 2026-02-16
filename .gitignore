@@ -70,8 +70,17 @@ Thumbs.db
 *.db-wal
 
 # Site-specific
-backend/CollectGames.Backend/bin/
-backend/CollectGames.Backend/obj/
-frontend/node_modules/
-frontend/dist/
-frontend/build/
+[Bb]in/
+[Oo]bj/
+node_modules/
+dist/
+build/
+.env*
+*.local
+.vs/
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates

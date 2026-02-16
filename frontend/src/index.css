@@ -12,54 +12,76 @@
   --snes-bg: #2D2640;
   --snes-bg-light: #3D3650;
   --snes-bg-dark: #1D1630;
-  
+
   /* Text Colors - High Contrast */
   --text-primary: #FFFFFF;
   --text-secondary: #E0E0E0;
   --text-muted: #B0B0B0;
-  
+
   /* Semantic Colors */
   --success: #4CAF50;
   --warning: #FF9800;
   --error: #F44336;
   --info: #2196F3;
-  
+
   /* Spacing System (8px base) */
-  --spacing-xs: 0.25rem;  /* 4px */
-  --spacing-sm: 0.5rem;   /* 8px */
-  --spacing-md: 1rem;     /* 16px */
-  --spacing-lg: 1.5rem;   /* 24px */
-  --spacing-xl: 2rem;     /* 32px */
-  --spacing-2xl: 3rem;    /* 48px */
-  --spacing-3xl: 4rem;    /* 64px */
-  
+  --spacing-xs: 0.25rem;
+  /* 4px */
+  --spacing-sm: 0.5rem;
+  /* 8px */
+  --spacing-md: 1rem;
+  /* 16px */
+  --spacing-lg: 1.5rem;
+  /* 24px */
+  --spacing-xl: 2rem;
+  /* 32px */
+  --spacing-2xl: 3rem;
+  /* 48px */
+  --spacing-3xl: 4rem;
+  /* 64px */
+
   /* Typography Scale */
   --font-pixel: 'Press Start 2P', cursive;
   --font-body: 'Inter', sans-serif;
-  
-  --font-size-xs: 0.75rem;   /* 12px */
-  --font-size-sm: 0.875rem;  /* 14px */
-  --font-size-base: 1rem;    /* 16px */
-  --font-size-lg: 1.25rem;   /* 20px */
-  --font-size-xl: 1.5rem;    /* 24px */
-  --font-size-2xl: 2rem;     /* 32px */
-  
+
+  --font-size-xs: 0.75rem;
+  /* 12px */
+  --font-size-sm: 0.875rem;
+  /* 14px */
+  --font-size-base: 1rem;
+  /* 16px */
+  --font-size-lg: 1.25rem;
+  /* 20px */
+  --font-size-xl: 1.5rem;
+  /* 24px */
+  --font-size-2xl: 2rem;
+  /* 32px */
+
   /* Border Radius */
   --radius-sm: 4px;
   --radius-md: 8px;
   --radius-lg: 12px;
-  
+
   /* Transitions */
   --transition-fast: 150ms ease-in-out;
   --transition-base: 250ms ease-in-out;
   --transition-slow: 350ms ease-in-out;
-  
+
   /* Z-index */
   --z-base: 1;
   --z-dropdown: 100;
   --z-modal: 1000;
   --z-tooltip: 2000;
-  
+
+  /* Glassmorphism & Effects */
+  --glass-bg: rgba(61, 54, 80, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  --glass-blur: blur(8px);
+
+  --glow-snes: 0 0 15px rgba(123, 95, 166, 0.5);
+  --glow-yellow: 0 0 15px rgba(244, 208, 63, 0.3);
+
   /* Breakpoints (for reference in JS) */
   --breakpoint-sm: 640px;
   --breakpoint-md: 768px;
@@ -68,7 +90,9 @@
 }
 
 /* CSS Reset */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -96,6 +120,7 @@ body {
 
 /* Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {

@@ -24,6 +24,7 @@ export function WishlistCard({ item, onEdit, onDelete, onPurchase }: WishlistCar
                         src={item.imageUrl.startsWith('/') ? `http://localhost:5000${item.imageUrl}` : item.imageUrl}
                         alt={item.title}
                         className={styles.image}
+                        loading="lazy"
                     />
                 ) : (
                     <div className={styles.placeholder}>
