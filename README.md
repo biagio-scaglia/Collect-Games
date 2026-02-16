@@ -1,10 +1,10 @@
 # CollectGames 🎮
 
-Applicazione full-stack per gestire la tua collezione di videogiochi con stile retrò Super Nintendo, potenziata con le ultime tecnologie per performance e scalabilità.
+Applicazione full-stack per gestire la tua collezione di videogiochi con stile retrò Super Nintendo, potenziata con le ultime tecnologie per performance, scalabilità e real-time capabilities.
 
 ## 🐳 Docker & Infrastructure
 
-Il progetto è completamente containerizzato e pronto per il cloud, includendo ora il caching distribuito.
+Il progetto è completamente containerizzato e pronto per il cloud, includendo caching distribuito e background jobs.
 
 ### Local Development (Docker Compose)
 Per avviare l'intero stack (Frontend, Backend, SQL Server, Redis) in locale:
@@ -14,6 +14,7 @@ docker compose up --build
 - **Frontend**: http://localhost:8080
 - **Backend API**: http://localhost:5000
 - **Scalar API Doc**: http://localhost:5000/scalar/v1
+- **Hangfire Dashboard**: http://localhost:5000/hangfire
 - **Redis Cache**: Port 6379
 
 ### Kubernetes (Scaling)
@@ -21,10 +22,6 @@ I manifesti sono disponibili nella cartella `/k8s`.
 ```bash
 kubectl apply -f k8s/
 ```
-Include ora:
-- **MSSQL**: Database primario.
-- **Redis**: Cache distribuita per performance elevate.
-- **Backend & Frontend**: Scalabili con più repliche.
 
 ## 🚀 Quick Start
 
@@ -47,40 +44,81 @@ npm run dev
 ## ✨ Features & Tech Stack
 
 ### Backend (ASP.NET Core 10.0)
-- **Serilog**: Logging strutturato su console e file.
-- **Redis**: Caching distribuito per query ultra-veloci.
-- **QuestPDF**: Generazione report della collezione in formato PDF.
-- **FluentValidation**: Validazione DTO pulita e separata dalla business logic.
-- **Mapster**: Mapping automatico tra DTO e modelli Entity Framework.
-- **Polly**: Politiche di resilienza (Retry) per le operazioni su database.
-- **Scalar UI**: Documentazione API interattiva e moderna.
+- **MediatR**: Pattern CQRS per separare comandi e query
+- **Hangfire**: Background jobs schedulati (cache warmup, image cleanup)
+- **SignalR**: Notifiche real-time per aggiornamenti collezione
+- **Serilog**: Logging strutturato su console e file
+- **Redis**: Caching distribuito per query ultra-veloci
+- **QuestPDF**: Generazione report PDF (collezione e wishlist)
+- **FluentValidation**: Validazione DTO pulita
+- **Mapster**: Mapping automatico DTO ↔ Models
+- **Polly**: Retry policies per resilienza
+- **Scalar UI**: Documentazione API interattiva
 
 ### Frontend (React + TypeScript)
-- **TanStack Router**: Routing type-safe con gestione avanzata degli stati.
-- **TanStack Query**: Data fetching asincrono con caching e revalidazione automatica.
-- **Radix UI**: Componenti accessibili (Tabs, Dialog) per un'esperienza utente premium.
-- **React Hook Form + Zod**: Gestione form complessi con validazione schema-based.
-- **Framer Motion**: Animazioni fluida e transizioni SNS-style.
+- **TanStack Router**: Routing type-safe
+- **TanStack Query**: Data fetching con caching automatico
+- **Radix UI**: Componenti accessibili (Tabs, Dialog)
+- **React Hook Form + Zod**: Form validation schema-based
+- **React Hot Toast**: Notifiche toast eleganti
+- **Recharts**: Dashboard statistiche con grafici
+- **Zustand**: State management leggero
+- **Framer Motion**: Animazioni fluide
+- **Vitest**: Unit testing
+- **Playwright**: E2E testing
+
+## 📊 New Features
+
+### Real-time Notifications
+SignalR hub per notifiche istantanee quando la collezione viene modificata.
+
+### Background Jobs
+- **Cache Warmup**: Ogni ora (Hangfire)
+- **Image Cleanup**: Giornaliero (Hangfire)
+
+### Statistics Dashboard
+Dashboard con grafici interattivi:
+- Giochi per console (pie chart)
+- Distribuzione condizioni (bar chart)
+- Statistiche spesa totale
+
+### PDF Export
+Esporta collezione e wishlist in PDF con layout professionale.
+
+## 🧪 Testing
+
+```bash
+# Unit tests (Vitest)
+cd frontend
+npm run test
+
+# E2E tests (Playwright)
+npx playwright test
+
+# Backend tests
+cd backend/CollectGames.Backend
+dotnet test
+```
+
+## 🔌 API Documentation
+- **Scalar UI**: http://localhost:5000/scalar/v1
+- **Hangfire Dashboard**: http://localhost:5000/hangfire
 
 ## 📁 Struttura Progetto
 ```
 collect-games/
-├── backend/                 # ASP.NET Core Web API
-├── frontend/                # React + Vite (TS)
-├── k8s/                     # Manifesti Kubernetes (MSSQL, Redis, App)
-├── docker-compose.yml       # Orchestrazione locale
-└── start.bat                # Script di avvio rapido
+├── backend/
+│   ├── Handlers/         # MediatR CQRS handlers
+│   ├── Jobs/             # Hangfire background jobs
+│   ├── Hubs/             # SignalR hubs
+│   └── ...
+├── frontend/
+│   ├── stores/           # Zustand state management
+│   ├── components/       # React components + Stats Dashboard
+│   └── e2e/              # Playwright tests
+├── k8s/                  # Kubernetes manifests
+└── docker-compose.yml
 ```
-
-## 🔌 API Documentation
-Accedi alla documentazione interattiva Scalar (migliore di Swagger!) quando il backend è in esecuzione:
-`http://localhost:5000/scalar/v1`
-
-## 🎮 Utilizzo
-1. **Esporta in PDF**: Usa il pulsante "Export PDF" nell'header per scaricare la tua collezione.
-2. **Gestione Wishlist**: Aggiungi giochi alla lista dei desideri e monitora i prezzi.
-3. **Recensioni**: Valuta i tuoi giochi con il sistema a stelle integrato.
-4. **Filtri Pixel-Perfect**: Filtra per console o condizione (Loose, CIB, Sealed).
 
 ---
 **Made with ♥ by Biagio Scaglia**

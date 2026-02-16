@@ -1,4 +1,5 @@
 import { createRootRoute, Link, Outlet } from '@tanstack/react-router';
+import { Toaster } from 'react-hot-toast';
 import { Gamepad2, Heart, MessageSquare } from 'lucide-react';
 import { Header } from '../components/Header';
 import * as Tabs from '@radix-ui/react-tabs';
@@ -63,6 +64,18 @@ function RootComponent() {
                     consoles={consoles ?? []}
                 />
             </Suspense>
+
+            <Toaster
+                position="top-right"
+                toastOptions={{
+                    duration: 4000,
+                    style: {
+                        background: '#2a2a3e',
+                        color: '#fff',
+                        border: '2px solid #7B5FA6',
+                    },
+                }}
+            />
 
             <footer className={styles.footer}>
                 <p className={styles.footerText}>Made with ♥ by Biagio</p>

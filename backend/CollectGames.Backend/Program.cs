@@ -1,11 +1,16 @@
 using CollectGames.Backend.Data;
 using CollectGames.Backend.Services;
+using CollectGames.Backend.Hubs;
+using CollectGames.Backend.Jobs;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Scalar.AspNetCore;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using CollectGames.Backend.Validators;
+using Hangfire;
+using Hangfire.SqlServer;
+using MediatR;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,6 +30,23 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<IImageService, LocalImageService>();
 builder.Services.AddScoped<ICollectionReportService, CollectionReportService>();
 
+// Configure MediatR
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
+
+// Configure Hangfire
+builder.Services.AddHangfire(configuration => configuration
+    .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+    .UseSimpleAssemblyNameTypeSerializer()
+    .UseRecommendedSerializerSettings()
+    .UseSqlServerStorage(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddHangfireServer();
+builder.Services.AddScoped<CacheWarmupJob>();
+builder.Services.AddScoped<ImageCleanupJob>();
+
+// Configure SignalR
+builder.Services.AddSignalR();
+
 // Configure Redis Caching
 builder.Services.AddStackExchangeRedisCache(options =>
 {
@@ -38,7 +60,8 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins("http://localhost:5173", "http://localhost:5174", "http://localhost:5175")
               .AllowAnyHeader()
-              .AllowAnyMethod();
+              .AllowAnyMethod()
+              .AllowCredentials(); // Required for SignalR
     });
 });
 
@@ -61,7 +84,23 @@ if (app.Environment.IsDevelopment())
 app.UseCors();
 app.UseStaticFiles();
 app.UseAuthorization();
+
+// Configure Hangfire Dashboard
+app.UseHangfireDashboard("/hangfire");
+
+// Schedule recurring jobs
+RecurringJob.AddOrUpdate<CacheWarmupJob>(
+    "cache-warmup",
+    job => job.Execute(),
+    Cron.Hourly);
+
+RecurringJob.AddOrUpdate<ImageCleanupJob>(
+    "image-cleanup",
+    job => job.Execute(),
+    Cron.Daily);
+
 app.MapControllers();
+app.MapHub<CollectionHub>("/hubs/collection");
 
 try
 {
