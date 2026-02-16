@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, ShoppingCart } from 'lucide-react';
+import { Plus, ShoppingCart, FileDown } from 'lucide-react';
 import { wishlistApi } from '../services/api';
 import type { WishlistItem } from '../types';
 import { WishlistCard } from './WishlistCard';
@@ -79,6 +79,10 @@ export function WishlistPage({ onPurchaseSuccess }: WishlistPageProps) {
     };
 
 
+    const handleExportPdf = () => {
+        window.open('http://localhost:5000/api/Wishlist/export/pdf', '_blank');
+    };
+
     return (
         <div className="wishlist-page">
             <div className={styles.pageHeader}>
@@ -88,6 +92,14 @@ export function WishlistPage({ onPurchaseSuccess }: WishlistPageProps) {
                 >
                     <Plus size={20} />
                     Add to Wishlist
+                </button>
+                <button
+                    className={styles.secondaryButton}
+                    onClick={handleExportPdf}
+                    disabled={wishlist.length === 0}
+                >
+                    <FileDown size={20} />
+                    Export PDF
                 </button>
             </div>
 

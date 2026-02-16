@@ -12,11 +12,24 @@ public class WishlistController : ControllerBase
 {
     private readonly AppDbContext _context;
     private readonly Services.IImageService _imageService;
+    private readonly Services.ICollectionReportService _reportService;
 
-    public WishlistController(AppDbContext context, Services.IImageService imageService)
+    public WishlistController(AppDbContext context, Services.IImageService imageService, Services.ICollectionReportService reportService)
     {
         _context = context;
         _imageService = imageService;
+        _reportService = reportService;
+    }
+
+    [HttpGet("export/pdf")]
+    public async Task<IActionResult> ExportToPdf()
+    {
+        var items = await _context.Wishlist
+            .OrderByDescending(w => w.AddedDate)
+            .ToListAsync();
+
+        var pdfBytes = _reportService.GenerateWishlistPdf(items);
+        return File(pdfBytes, "application/pdf", $"CollectGames_Wishlist_{DateTime.Now:yyyyMMdd}.pdf");
     }
 
     [HttpGet]
