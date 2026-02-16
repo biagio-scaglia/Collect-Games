@@ -1,266 +1,87 @@
 # CollectGames 🎮
 
-Applicazione full-stack per gestire la tua collezione di videogiochi con stile retrò Super Nintendo.
+Applicazione full-stack per gestire la tua collezione di videogiochi con stile retrò Super Nintendo, potenziata con le ultime tecnologie per performance e scalabilità.
 
-## 🐳 Docker & Scalability
+## 🐳 Docker & Infrastructure
 
-The project is fully containerized and cloud-ready.
+Il progetto è completamente containerizzato e pronto per il cloud, includendo ora il caching distribuito.
 
 ### Local Development (Docker Compose)
-To run the entire stack (Frontend, Backend, SQL Server) locally:
+Per avviare l'intero stack (Frontend, Backend, SQL Server, Redis) in locale:
 ```bash
-docker-compose up --build
+docker compose up --build
 ```
 - **Frontend**: http://localhost:8080
 - **Backend API**: http://localhost:5000
-- **SQL Server**: localhost,1433
+- **Scalar API Doc**: http://localhost:5000/scalar/v1
+- **Redis Cache**: Port 6379
 
 ### Kubernetes (Scaling)
-Manifests are available in the `/k8s` directory. We use 2 replicas for both frontend and backend by default for high availability.
-
-To deploy to a cluster:
+I manifesti sono disponibili nella cartella `/k8s`.
 ```bash
 kubectl apply -f k8s/
 ```
-
-> [!IMPORTANT]
-> For production scaling, ensure you configure a Shared Storage (PVC) for the `wwwroot/images` directory so images are shared across all pods.
+Include ora:
+- **MSSQL**: Database primario.
+- **Redis**: Cache distribuita per performance elevate.
+- **Backend & Frontend**: Scalabili con più repliche.
 
 ## 🚀 Quick Start
 
 ### Avvio Rapido (Windows)
-
 Doppio click su `start.bat` - avvierà automaticamente backend e frontend!
 
 ### Avvio Manuale
-
 **Backend:**
 ```bash
 cd backend/CollectGames.Backend
 dotnet run
 ```
-
 **Frontend:**
 ```bash
 cd frontend
-npm install  # solo la prima volta
+npm install
 npm run dev
 ```
 
-Poi apri [http://localhost:5173](http://localhost:5173)
+## ✨ Features & Tech Stack
+
+### Backend (ASP.NET Core 10.0)
+- **Serilog**: Logging strutturato su console e file.
+- **Redis**: Caching distribuito per query ultra-veloci.
+- **QuestPDF**: Generazione report della collezione in formato PDF.
+- **FluentValidation**: Validazione DTO pulita e separata dalla business logic.
+- **Mapster**: Mapping automatico tra DTO e modelli Entity Framework.
+- **Polly**: Politiche di resilienza (Retry) per le operazioni su database.
+- **Scalar UI**: Documentazione API interattiva e moderna.
+
+### Frontend (React + TypeScript)
+- **TanStack Router**: Routing type-safe con gestione avanzata degli stati.
+- **TanStack Query**: Data fetching asincrono con caching e revalidazione automatica.
+- **Radix UI**: Componenti accessibili (Tabs, Dialog) per un'esperienza utente premium.
+- **React Hook Form + Zod**: Gestione form complessi con validazione schema-based.
+- **Framer Motion**: Animazioni fluida e transizioni SNS-style.
 
 ## 📁 Struttura Progetto
-
 ```
 collect-games/
 ├── backend/                 # ASP.NET Core Web API
-│   └── CollectGames.Backend/
-│       ├── Controllers/     # API endpoints
-│       ├── Models/          # Database models
-│       ├── Services/        # Business logic
-│       └── wwwroot/         # Static files
-├── frontend/                # React + Vite
-│   ├── src/
-│   │   ├── components/      # React components
-│   │   ├── hooks/           # Custom hooks
-│   │   ├── services/        # API integration
-│   │   └── assets/          # Console icons
-│   └── README.md            # Frontend docs
-├── start.bat                # Avvio rapido (Windows)
-└── README.md                # Questo file
+├── frontend/                # React + Vite (TS)
+├── k8s/                     # Manifesti Kubernetes (MSSQL, Redis, App)
+├── docker-compose.yml       # Orchestrazione locale
+└── start.bat                # Script di avvio rapido
 ```
 
-## ✨ Features
-
-### Backend (ASP.NET Core)
-- ✅ RESTful API
-- ✅ Entity Framework Core + SQL Server
-- ✅ Upload immagini
-- ✅ CRUD completo per giochi e console
-- ✅ Swagger UI per testing
-
-### Frontend (React + Vite)
-- 🎨 Design retrò Super Nintendo
-- ⚡ Performance ottimizzate
-- ♿ WCAG 2.1 AA compliant
-- 📱 Responsive design
-- 🎬 Animazioni Framer Motion
-- 🎯 21 icone console integrate
-- 🔍 Filtri e ricerca real-time
-
-## 🛠️ Tech Stack
-
-| Layer | Tecnologie |
-|-------|-----------|
-| **Backend** | ASP.NET Core 8, Entity Framework Core, SQL Server |
-| **Frontend** | React 18, TypeScript, Vite, Framer Motion |
-| **Styling** | CSS Modules, Google Fonts (Press Start 2P) |
-| **Icons** | Lucide React |
-| **HTTP** | Axios |
-
-## 📦 Prerequisiti
-
-- **.NET 8 SDK** - [Download](https://dotnet.microsoft.com/download)
-- **Node.js 18+** - [Download](https://nodejs.org/)
-- **SQL Server** (LocalDB o Express)
-
-## 🔧 Setup Completo
-
-### 1. Backend Setup
-
-```bash
-cd backend/CollectGames.Backend
-
-# Ripristina pacchetti
-dotnet restore
-
-# Applica migrations
-dotnet ef database update
-
-# Avvia server
-dotnet run
-```
-
-Backend disponibile su: `https://localhost:7154`
-
-### 2. Frontend Setup
-
-```bash
-cd frontend
-
-# Installa dipendenze
-npm install
-
-# Avvia dev server
-npm run dev
-```
-
-Frontend disponibile su: `http://localhost:5173`
+## 🔌 API Documentation
+Accedi alla documentazione interattiva Scalar (migliore di Swagger!) quando il backend è in esecuzione:
+`http://localhost:5000/scalar/v1`
 
 ## 🎮 Utilizzo
-
-1. **Avvia l'applicazione** con `start.bat` o manualmente
-2. **Apri il browser** su http://localhost:5173
-3. **Aggiungi console** (opzionale) tramite API `/api/Consoles`
-4. **Aggiungi giochi** cliccando "Add Game"
-5. **Filtra e cerca** nella tua collezione
-
-## 📸 Screenshots
-
-### Home Page
-Design retrò con palette Super Nintendo, bordi pixel-art e animazioni fluide.
-
-### Game Card
-Ogni gioco mostra:
-- Immagine (o placeholder)
-- Icona console
-- Condizione (Loose/CIB/Sealed)
-- Prezzo pagato
-- Data acquisto
-- Note
-
-### Add Game Modal
-Form completo con:
-- Upload immagine con preview
-- Select console con icone
-- Validazione campi
-- Focus trap accessibile
-
-## 🔌 API Endpoints
-
-### User Collection
-- `GET /api/UserCollection` - Lista collezione
-- `POST /api/UserCollection` - Aggiungi gioco
-
-### Consoles
-- `GET /api/Consoles` - Lista console
-- `POST /api/Consoles` - Aggiungi console
-- `PUT /api/Consoles/{id}` - Modifica console
-- `DELETE /api/Consoles/{id}` - Elimina console
-
-Swagger UI: `https://localhost:7154/swagger`
-
-## 🎨 Console Supportate
-
-21 console con icone pixel-art:
-- Nintendo: NES, SNES, N64, GameCube, GB, GBC, GBA, NDS
-- Sony: PS1, PS2, PSP, PS Vita
-- Sega: Master System, Mega Drive, Saturn, Dreamcast
-- Altri: PC Engine, Neo Geo Pocket Color, Atari Lynx, WonderSwan, MAME
-
-## 🐛 Troubleshooting
-
-### Backend non si avvia
-- Verifica che SQL Server sia in esecuzione
-- Controlla la connection string in `appsettings.json`
-- Esegui `dotnet ef database update`
-
-### Frontend non si connette
-- Verifica che il backend sia su `https://localhost:7154`
-- Controlla CORS in `Program.cs`
-- Verifica `API_BASE_URL` in `frontend/src/services/api.ts`
-
-### Porte già in uso
-- Backend: Cambia porta in `Properties/launchSettings.json`
-- Frontend: Usa `npm run dev -- --port 3000`
-
-## 📝 Scripts Utili
-
-### Backend
-```bash
-dotnet run                    # Avvia server
-dotnet ef migrations add Name # Crea migration
-dotnet ef database update     # Applica migrations
-dotnet build                  # Build progetto
-```
-
-### Frontend
-```bash
-npm run dev      # Dev server
-npm run build    # Production build
-npm run preview  # Preview build
-npm run lint     # ESLint check
-```
-
-## 🚀 Deployment
-
-### Backend
-- Azure App Service
-- Docker container
-- IIS (Windows Server)
-
-### Frontend
-- Vercel (consigliato)
-- Netlify
-- GitHub Pages
-
-## 📄 License
-
-MIT
-
-## �‍💻 Author
-
-**Made by Biagio Scaglia**
-
-Full-stack developer passionate about retro gaming and modern web technologies.
-
-- 🎮 Retro gaming enthusiast
-- 💻 ASP.NET Core & React specialist
-- 🎨 UI/UX design lover
-
-## 🙏 Credits
-
-- **Font**: Press Start 2P by CodeMan38
-- **Icons**: Lucide Icons
-- **Console Images**: Retro gaming community
-- **Design Inspiration**: Super Nintendo Entertainment System
+1. **Esporta in PDF**: Usa il pulsante "Export PDF" nell'header per scaricare la tua collezione.
+2. **Gestione Wishlist**: Aggiungi giochi alla lista dei desideri e monitora i prezzi.
+3. **Recensioni**: Valuta i tuoi giochi con il sistema a stelle integrato.
+4. **Filtri Pixel-Perfect**: Filtra per console o condizione (Loose, CIB, Sealed).
 
 ---
-
-<div align="center">
-
-**Made with ♥ by Biagio for retro gaming collectors**
-
-*CollectGames © 2026*
-
-</div>
+**Made with ♥ by Biagio Scaglia**
+*Retro gaming enthusiast & Software Engineer*
