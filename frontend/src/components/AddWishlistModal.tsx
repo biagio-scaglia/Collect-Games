@@ -8,9 +8,13 @@ interface AddWishlistModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSuccess: () => void;
+    editingItem?: WishlistItem | null;
 }
 
-export function AddWishlistModal({ isOpen, onClose, onSuccess }: AddWishlistModalProps) {
+import type { WishlistItem } from '../types';
+
+
+export function AddWishlistModal({ isOpen, onClose, onSuccess, editingItem }: AddWishlistModalProps) {
     const [formData, setFormData] = useState<WishlistFormData>({
         title: '',
         platform: '',
@@ -20,21 +24,19 @@ export function AddWishlistModal({ isOpen, onClose, onSuccess }: AddWishlistModa
         imageUrl: '',
         notes: ''
     });
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
 
-    if (!isOpen) return null;
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setError(null);
-        setIsLoading(true);
-
-        try {
-            await wishlistApi.addToWishlist(formData);
-            onSuccess();
-            onClose();
-            // Reset form
+    React.useEffect(() => {
+        if (editingItem) {
+            setFormData({
+                title: editingItem.title,
+                platform: editingItem.platform,
+                priority: editingItem.priority,
+                estimatedPrice: editingItem.estimatedPrice,
+                purchaseLink: editingItem.purchaseLink || '',
+                imageUrl: editingItem.imageUrl || '',
+                notes: editingItem.notes || ''
+            });
+        } else {
             setFormData({
                 title: '',
                 platform: '',
@@ -44,19 +46,43 @@ export function AddWishlistModal({ isOpen, onClose, onSuccess }: AddWishlistModa
                 imageUrl: '',
                 notes: ''
             });
+        }
+    }, [editingItem, isOpen]);
+
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+
+    if (!isOpen) return null;
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError(null);
+        setIsLoading(true);
+
+        try {
+            if (editingItem) {
+                await wishlistApi.updateWishlistItem(editingItem.id, formData);
+            } else {
+                await wishlistApi.addToWishlist(formData);
+            }
+            onSuccess();
+            onClose();
         } catch (err) {
-            console.error('Failed to add wishlist item:', err);
-            setError('Failed to add item. Please try again.');
+            console.error('Failed to save wishlist item:', err);
+            setError('Failed to save item. Please try again.');
         } finally {
             setIsLoading(false);
         }
     };
 
+
     return (
         <div className={styles.overlay}>
             <div className={styles.modal}>
                 <div className={styles.header}>
-                    <h2 className={styles.title}>Add to Wishlist</h2>
+                    <h2 className={styles.title}>{editingItem ? 'Edit' : 'Add to'} Wishlist</h2>
+
                     <button className={styles.closeButton} onClick={onClose} aria-label="Close modal">
                         <X size={24} />
                     </button>
@@ -195,10 +221,11 @@ export function AddWishlistModal({ isOpen, onClose, onSuccess }: AddWishlistModa
                             {isLoading ? 'Saving...' : (
                                 <>
                                     <Save size={20} />
-                                    Add to Wishlist
+                                    {editingItem ? 'Update' : 'Add to'} Wishlist
                                 </>
                             )}
                         </button>
+
                     </div>
                 </form>
             </div>

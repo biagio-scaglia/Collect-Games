@@ -19,6 +19,7 @@ export function WishlistPage({ onPurchaseSuccess }: WishlistPageProps) {
     const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [editingItem, setEditingItem] = useState<WishlistItem | null>(null);
 
     const fetchWishlist = async () => {
         setIsLoading(true);
@@ -68,10 +69,15 @@ export function WishlistPage({ onPurchaseSuccess }: WishlistPageProps) {
     };
 
     const handleEdit = (item: WishlistItem) => {
-        // TODO: Implement Edit Modal for Wishlist
-        console.log("Edit requested for", item.title);
-        alert("Edit not implemented yet, delete and re-add for now!");
+        setEditingItem(item);
+        setIsAddModalOpen(true);
     };
+
+    const handleCloseModal = () => {
+        setIsAddModalOpen(false);
+        setEditingItem(null);
+    };
+
 
     return (
         <div className="wishlist-page">
@@ -108,8 +114,9 @@ export function WishlistPage({ onPurchaseSuccess }: WishlistPageProps) {
 
             <AddWishlistModal
                 isOpen={isAddModalOpen}
-                onClose={() => setIsAddModalOpen(false)}
+                onClose={handleCloseModal}
                 onSuccess={fetchWishlist}
+                editingItem={editingItem}
             />
         </div>
     );

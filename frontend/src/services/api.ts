@@ -88,7 +88,18 @@ export const wishlistApi = {
     },
 
     async updateWishlistItem(id: number, data: Partial<WishlistFormData>): Promise<WishlistItem> {
-        const response = await api.put<WishlistItem>(`/Wishlist/${id}`, data);
+        const formData = new FormData();
+        if (data.title) formData.append('title', data.title);
+        if (data.platform) formData.append('platform', data.platform);
+        if (data.priority) formData.append('priority', data.priority);
+        if (data.estimatedPrice !== undefined) formData.append('estimatedPrice', data.estimatedPrice.toString());
+        if (data.purchaseLink) formData.append('purchaseLink', data.purchaseLink);
+        if (data.notes) formData.append('notes', data.notes);
+        if (data.image) formData.append('image', data.image);
+
+        const response = await api.put<WishlistItem>(`/Wishlist/${id}`, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
         return response.data;
     },
 
