@@ -1,0 +1,209 @@
+.app {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--snes-bg);
+}
+
+.main {
+    flex: 1;
+    padding: var(--spacing-2xl) var(--spacing-xl);
+}
+
+.container {
+    max-width: 1280px;
+    margin: 0 auto;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--spacing-xl);
+    margin-top: var(--spacing-xl);
+}
+
+.loading,
+.error,
+.empty {
+    text-align: center;
+    padding: var(--spacing-3xl);
+    font-family: var(--font-pixel);
+    font-size: var(--font-size-lg);
+}
+
+.loading {
+    color: var(--snes-yellow);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.error {
+    color: var(--error);
+    background: rgba(244, 67, 54, 0.1);
+    border: 3px solid var(--error);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-xl);
+}
+
+.empty {
+    color: var(--text-secondary);
+    background: var(--snes-bg-light);
+    border: 4px dashed var(--snes-purple-dark);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-3xl);
+}
+
+.emptyIcon {
+    margin: 0 auto var(--spacing-lg);
+    color: var(--snes-gray-dark);
+    opacity: 0.5;
+}
+
+.footer {
+    background: var(--snes-bg-dark);
+    border-top: 4px solid var(--snes-purple-dark);
+    padding: var(--spacing-lg);
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+}
+
+.footerText {
+    font-family: var(--font-pixel);
+    font-size: var(--font-size-xs);
+    color: var(--snes-gray);
+}
+
+.footerHeart {
+    color: var(--snes-red);
+    animation: heartbeat 1.5s ease-in-out infinite;
+}
+
+.navTabs {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-md);
+    background: var(--snes-bg-dark);
+    padding: var(--spacing-md) 0;
+    border-bottom: 4px solid var(--snes-gray-dark);
+    margin-bottom: var(--spacing-lg);
+}
+
+.navTab {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-family: var(--font-pixel);
+    font-size: var(--font-size-base);
+    padding: var(--spacing-sm) var(--spacing-md);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    transition: all 0.2s;
+    border-bottom: 2px solid transparent;
+}
+
+.navTab:hover {
+    color: var(--snes-purple-light);
+}
+
+.navTab.activeTab {
+    color: var(--snes-purple);
+    border-bottom-color: var(--snes-purple);
+}
+
+@keyframes heartbeat {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.2);
+    }
+}
+
+@media (max-width: 768px) {
+    .main {
+        padding: var(--spacing-md);
+    }
+
+    .grid {
+        gap: var(--spacing-md);
+        /* Use smaller minimum width for cards on mobile to allow 2 columns if space permits, or just 1 */
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    }
+}
+
+@media (max-width: 480px) {
+    .main {
+        padding: var(--spacing-sm);
+    }
+
+    .container {
+        padding: 0 var(--spacing-xs);
+    }
+
+    .grid {
+        grid-template-columns: 1fr;
+    }
+
+    .navTabs {
+        flex-wrap: wrap;
+        gap: var(--spacing-xs);
+    }
+
+    .navTab {
+        font-size: var(--font-size-xs);
+        padding: var(--spacing-xs) var(--spacing-sm);
+        flex: 1;
+        justify-content: center;
+    }
+}
+
+.pageHeader {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: var(--spacing-lg);
+}
+
+.primaryButton {
+    background: var(--snes-purple);
+    border: 3px solid var(--snes-purple-dark);
+    color: var(--text-primary);
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border-radius: var(--radius-md);
+    font-family: var(--font-pixel);
+    font-size: var(--font-size-sm);
+    text-transform: uppercase;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    box-shadow: 0 4px 0 var(--snes-purple-dark);
+    transition: all 0.1s;
+}
+
+.primaryButton:hover {
+    background: var(--snes-purple-light);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 0 var(--snes-purple-dark);
+}
+
+.primaryButton:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 var(--snes-purple-dark);
+}

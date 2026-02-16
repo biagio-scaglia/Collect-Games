@@ -1,0 +1,345 @@
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(29, 22, 48, 0.9);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: var(--z-modal);
+    padding: var(--spacing-lg);
+}
+
+.modal {
+    background: var(--snes-bg-light);
+    border: 6px solid var(--snes-purple);
+    border-radius: var(--radius-lg);
+    max-width: 600px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow:
+        0 0 0 3px var(--snes-purple-dark),
+        0 20px 60px rgba(0, 0, 0, 0.6),
+        inset 0 2px 0 rgba(255, 255, 255, 0.1);
+}
+
+.header {
+    background: linear-gradient(135deg, var(--snes-purple-dark) 0%, var(--snes-purple) 100%);
+    padding: var(--spacing-lg);
+    border-bottom: 4px solid var(--snes-yellow);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.title {
+    font-family: var(--font-pixel);
+    font-size: var(--font-size-lg);
+    color: var(--text-primary);
+    text-shadow: 2px 2px 0 var(--snes-purple-dark);
+}
+
+.closeButton {
+    background: var(--snes-bg-dark);
+    border: 3px solid var(--snes-purple-dark);
+    border-radius: var(--radius-sm);
+    padding: var(--spacing-sm);
+    cursor: pointer;
+    color: var(--text-primary);
+    transition: all var(--transition-fast);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.closeButton:hover {
+    background: var(--snes-purple-dark);
+    border-color: var(--snes-purple);
+}
+
+.form {
+    padding: var(--spacing-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.formRow {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-md);
+}
+
+@media (max-width: 640px) {
+    .formRow {
+        grid-template-columns: 1fr;
+    }
+}
+
+.label {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.required {
+    color: var(--error);
+}
+
+.input,
+.select,
+.textarea {
+    padding: var(--spacing-md);
+    background: var(--snes-bg-dark);
+    border: 3px solid var(--snes-purple-dark);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    transition: all var(--transition-base);
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+    outline: none;
+    border-color: var(--snes-purple);
+    box-shadow: 0 0 0 3px rgba(123, 95, 166, 0.3);
+}
+
+.textarea {
+    resize: vertical;
+    min-height: 100px;
+    font-family: var(--font-body);
+}
+
+.select option {
+    background: var(--snes-bg-dark);
+    color: var(--text-primary);
+    padding: var(--spacing-sm);
+}
+
+.selectWithIcon {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.selectConsoleIcon {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+    vertical-align: middle;
+}
+
+.fileInput {
+    display: none;
+}
+
+.fileLabel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-lg);
+    background: var(--snes-bg-dark);
+    border: 3px dashed var(--snes-purple-dark);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all var(--transition-base);
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.fileLabel:hover {
+    border-color: var(--snes-purple);
+    background: var(--snes-purple-dark);
+    color: var(--text-primary);
+}
+
+.imageUpload {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.uploadButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md) var(--spacing-lg);
+    background: var(--snes-purple);
+    color: var(--text-primary);
+    border: 3px solid var(--snes-purple-dark);
+    border-radius: var(--radius-md);
+    font-family: var(--font-pixel);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-base);
+    text-transform: uppercase;
+    box-shadow: 0 4px 0 var(--snes-purple-dark);
+}
+
+.uploadButton:hover {
+    background: var(--snes-purple-light);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 0 var(--snes-purple-dark);
+}
+
+.uploadButton:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 var(--snes-purple-dark);
+}
+
+.imagePreview {
+    margin-top: var(--spacing-sm);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 4px solid var(--snes-purple);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.imagePreview img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.helpText {
+    font-size: var(--font-size-xs);
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.preview {
+    margin-top: var(--spacing-sm);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 3px solid var(--snes-purple);
+}
+
+.previewImage {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.actions {
+    display: flex;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-md);
+}
+
+.submitButton,
+.cancelButton {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md) var(--spacing-lg);
+    border: none;
+    border-radius: var(--radius-md);
+    font-family: var(--font-pixel);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.submitButton {
+    background: var(--snes-yellow);
+    color: var(--snes-bg-dark);
+    box-shadow:
+        0 4px 0 var(--snes-yellow-dark),
+        0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.submitButton:hover:not(:disabled) {
+    background: var(--snes-yellow-dark);
+    transform: translateY(-2px);
+    box-shadow:
+        0 6px 0 var(--snes-yellow-dark),
+        0 8px 16px rgba(0, 0, 0, 0.4);
+}
+
+.submitButton:active:not(:disabled) {
+    transform: translateY(2px);
+    box-shadow:
+        0 2px 0 var(--snes-yellow-dark),
+        0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.submitButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.cancelButton {
+    background: var(--snes-gray);
+    color: var(--snes-bg-dark);
+    box-shadow:
+        0 4px 0 var(--snes-gray-dark),
+        0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.cancelButton:hover {
+    background: var(--snes-gray-dark);
+    transform: translateY(-2px);
+}
+
+.error {
+    background: rgba(244, 67, 54, 0.2);
+    border: 2px solid var(--error);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+    color: var(--error);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+}
+
+@media (max-width: 640px) {
+    .modal {
+        max-height: 95vh;
+        width: 95%;
+        margin: var(--spacing-sm);
+    }
+
+    .form {
+        padding: var(--spacing-lg);
+    }
+
+    .header {
+        padding: var(--spacing-md);
+    }
+
+    .title {
+        font-size: var(--font-size-base);
+    }
+
+    .actions {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 480px) {
+    .form {
+        padding: var(--spacing-md);
+    }
+
+    .formRow {
+        gap: var(--spacing-sm);
+    }
+}

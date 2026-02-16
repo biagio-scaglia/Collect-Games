@@ -1,0 +1,77 @@
+## [Visual Studio Gitignore](https://github.com/github/gitignore/blob/main/VisualStudio.gitignore)
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# User-specific files (MonoDevelop/Xamarin Studio)
+*.userprefs
+
+# Mono auto-generated files
+mono_crash.*
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bbin/
+obj/
+intermediate/
+bin/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio 2015/2017/2019/2022 cache build results
+.vs/
+# Uncomment if you use a linting tool that creates a .sass-cache folder
+# .sass-cache/
+
+# Node.js
+node_modules/
+dist/
+build/
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# JetBrains
+.idea/
+*.iws
+
+# VS Code
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# EF Core
+*.db
+*.db-shm
+*.db-wal
+
+# Site-specific
+backend/CollectGames.Backend/bin/
+backend/CollectGames.Backend/obj/
+frontend/node_modules/
+frontend/dist/
+frontend/build/
