@@ -2,6 +2,30 @@
 
 Applicazione full-stack per gestire la tua collezione di videogiochi con stile retrò Super Nintendo.
 
+## 🐳 Docker & Scalability
+
+The project is fully containerized and cloud-ready.
+
+### Local Development (Docker Compose)
+To run the entire stack (Frontend, Backend, SQL Server) locally:
+```bash
+docker-compose up --build
+```
+- **Frontend**: http://localhost:8080
+- **Backend API**: http://localhost:5000
+- **SQL Server**: localhost,1433
+
+### Kubernetes (Scaling)
+Manifests are available in the `/k8s` directory. We use 2 replicas for both frontend and backend by default for high availability.
+
+To deploy to a cluster:
+```bash
+kubectl apply -f k8s/
+```
+
+> [!IMPORTANT]
+> For production scaling, ensure you configure a Shared Storage (PVC) for the `wwwroot/images` directory so images are shared across all pods.
+
 ## 🚀 Quick Start
 
 ### Avvio Rapido (Windows)
